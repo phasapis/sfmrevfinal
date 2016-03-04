@@ -1,0 +1,98 @@
+<html>
+    <title>SIFEM Mesh Viewer</title>
+    <!--<script type="text/javascript" src="/Sifem/faces/resources/js/three.min.js"></script>-->
+    <!--<script type="text/javascript" src="/Sifem/faces/resources/js/objstl.js"></script>-->
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <link href="src/css/Madeleine.css" rel="stylesheet" />
+    <script src="src/lib/stats.js"></script>
+    <script src="src/lib/detector.js"></script>
+    <script src="src/lib/three.min.js"></script>
+    <script src="src/Madeleine.js"></script>
+    <style type="text/css">
+        #main{
+            height: 80%;
+            width: 80%;
+        }
+        .tile {
+            margin: 0.9%;
+            width: 47.9%;
+            height: 47.9%;
+            float: left;
+            background: #DADADA;
+        }
+
+    </style>
+</head>
+<body>
+<center>
+<div id="main">
+<div id="target" class="madeleine"></div>
+</div>
+</center>
+<script>
+    function getUrlVars()
+    {
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for(var i = 0; i < hashes.length; i++)
+        {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        return vars;
+    }
+
+    if(getUrlVars()["model"]=="HeadModel"){
+        window.location.href = '/Sifem/faces/resources/stl/HeadModel.html';
+    }else if(getUrlVars()["model"]=="CochleaCoiledModel-WithLongitudinalCoupling"){
+        $('#main').html('<div id="c1" class="tile"></div><div id="c2" class="tile"></div><div id="c3" class="tile"></div><div id="c4" class="tile"></div>');
+        var mad1 = new Madeleine({
+            target: 'c1', // target div id
+            data:'/Sifem/rest/fetchMeshVisualization/stlForModel/parametricbasilar',
+            path: './src',  // path to source directory from current html file
+            h:500,
+            w:500
+        });
+        var mad2 = new Madeleine({
+            target: 'c2', // target div id
+            data:'/Sifem/rest/fetchMeshVisualization/stlForModel/parametricbone',
+            path: './src',  // path to source directory from current html file
+            h:500,
+            w:500
+        });
+        var mad3 = new Madeleine({
+            target: 'c3', // target div id
+            data:'/Sifem/rest/fetchMeshVisualization/stlForModel/parametricscalas',
+            path: './src',  // path to source directory from current html file
+            h:500,
+            w:500
+        });
+        var mad4 = new Madeleine({
+            target: 'c4', // target div id
+            data:'/Sifem/rest/fetchMeshVisualization/stlForModel/parametricvestibuli',
+            path: './src',  // path to source directory from current html file
+            h:500,
+            w:500
+        });
+    }else{
+        $.get( "/Sifem/rest/fetchMeshVisualization/typeForModel/"+getUrlVars()["model"], function( data ) {
+            if(data=="stl"){
+                var mad = new Madeleine({
+                    target: 'target', // target div id
+                    data:'/Sifem/rest/fetchMeshVisualization/stlForModel/'+getUrlVars()["model"],
+                    path: './src',  // path to source directory from current html file
+                    h:800,
+                    w:800
+                });
+            }else if(data=="png"){
+                $('#target').html('<img id="modelViz" src=\'/Sifem/rest/fetchMeshVisualization/pngForModel/'+getUrlVars()["model"]+'\' />');
+            }else{
+                $('#target').html('<b>Model not available for preview !</b>');
+            }
+        });
+    }
+
+</script>
+</body>
+</html>
